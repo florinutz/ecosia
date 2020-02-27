@@ -1,3 +1,18 @@
+### usage
+```bash
+go build cmd/trees-server.go
+
+./trees-server -h
+
+./trees-server&
+
+curl http://localhost:8000
+curl http://localhost:8000?favoriteTree=
+curl http://localhost:8000?favoriteTree=baobab
+
+pkill trees-server # I hope you're on linux :P
+```
+
 ### tests
 ```bash
 go test  -v -coverpkg=ecosia/tree -race ./...
