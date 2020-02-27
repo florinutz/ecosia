@@ -218,3 +218,32 @@ func TestIntegration(t *testing.T) {
 		}
 	})
 }
+
+func ExampleNewHandler() {
+	var (
+		urlKey = "favoriteTree"
+		tree   = "猴麵包樹"
+	)
+
+	tpl, _ := template.New("test").Parse("<p>{{.}}</p>")
+
+	view := NewTemplateView(tpl) // or use the default tpl: NewTemplateView(nil)
+	handler := NewHandler(urlKey, view)
+
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	tempUrl := fmt.Sprintf("%s/?%s=%s", ts.URL, urlKey, tree)
+	res, err := http.Get(tempUrl)
+	if err != nil {
+		panic(err)
+	}
+
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(bodyBytes))
+	// Output: <p>猴麵包樹</p>
+}

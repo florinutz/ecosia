@@ -3,6 +3,7 @@ package tree_test
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"testing"
 
@@ -90,4 +91,31 @@ type badWriter struct{}
 
 func (b badWriter) Write(p []byte) (n int, err error) {
 	return 0, errors.New("this is only meant to fail")
+}
+
+func ExampleNewTemplateView() {
+	tpl, _ := template.New("test").Parse("<p>{{.}}</p>")
+
+	// this will render the template by inserting the tree into it,
+	// then it will send it to the writer
+	view := NewTemplateView(tpl)
+
+	var buf bytes.Buffer
+
+	if err := view(&buf, "baobab"); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(buf.String())
+	// Output: <p>baobab</p>
+}
+
+func BenchmarkTemplateView(b *testing.B) {
+	view := NewTemplateView(nil)
+
+	var buf bytes.Buffer
+
+	for i := 0; i < b.N; i++ {
+		_ = view(&buf, "baobab")
+	}
 }
